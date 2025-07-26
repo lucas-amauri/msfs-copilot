@@ -1,0 +1,52 @@
+==========================================
+PT-BR
+==========================================
+Confirmar Transferência
+Solicitar permissão IFR
+Solicitar acompanhamento
+Ajustar ....
+Confirmar Instrução
+Anunciar aproximação final
+Confirmar código Sqwak
+Confirmar contato por radar
+
+
+
+
+'''
+      for entry in splitted:
+        transfer = re.search(r'Acknowledge Handoff', entry)
+
+        print(entry + " => " + str(re.search(r'Tune', entry)))
+
+        match self.lang :
+          case "en_US" :
+            if (('Acknowledge Handoff' in entry)) :
+              return "HANDOFF"
+            elif (('Tune' in entry)) :
+              return "TUNE"
+            elif (('Contact ' in entry)) :
+              return "CONTACT"
+            elif ('Confirm' in entry) :
+              return "CONFIRM"
+            elif (qnh) :
+              self.value = float(str(qnh.group(1))) / 100
+              return "ALTIMETER"
+          
+          case "pt_BR" :
+            transfer = re.search(r'Confirmar Trans', entry)
+            
+            if (('Confirmar Transfer' in entry) or transfer) :
+              return "TRANSFER"
+            elif ('Confirmar' in entry) :
+              return "CONFIRM"
+            elif ('Ajustar ' in entry) :
+              return "CONFIRM"
+            elif ('Solicitar permis' in entry) :
+              return "CONFIRM"
+            elif ('Ajustar ' in entry) :
+              return "CONFIRM"
+            elif (qnh) :
+              self.value = float(str(qnh.group(1))) / 100
+              return "ALTIMETER"
+      '''
