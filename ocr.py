@@ -1,11 +1,102 @@
-from PIL import ImageGrab, ImageEnhance
+from PIL import ImageGrab
 import pytesseract
 import re
+
+OPTIONS = {
+  #"ANNOUNCE_FINAL" : {
+  #  "expression" : r"\d\s+\-\s+Announce\s+on\s+Final",
+  #  "command" : "ATC_MENU_2",
+  #  "state" : "ON_AIR"
+  #},
+  "ACKNOWLEDGE_HANDOFF" : {
+    "expression" : r"\d\s+\-\s+Acknowledge\s+Handoff",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  "ACKNOWLEDGE_CONTACT" : {
+    "expression" : r"\d\s+\-\s+Acknowledge\s+Radar\s+Contact",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  "ACKNOWLEDGE_FREQUENCY" : {
+    "expression" : r"\d\s+\-\s+Acknowledge\s+Frequency\s+Change",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  "ACKNOWLEDGE_INDICATION" : {
+    "expression" : r"\d\s+\-\s+Acknowledge\s+Indication",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  "ACKNOWLEDGE_INSTRUCTION" : {
+    "expression" : r"\d\s+\-\s+Acknowledge\s+Instruction",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  "ACKNOWLEDGE_SQUAWK" : {
+    "expression" : r"\d\s+\-\s+Acknowledge\s+Squawk\s+Code",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  
+  "ANNOUNCE_FINAL_APPROACH" : {
+    "expression" : r"\d\s+\-\s+Announce\s+Final\s+Approach",
+    "command" : "ATC_MENU_2",
+    "state" : "ON_AIR"
+  },
+  
+  "ANNOUNCE_TAXI" : {
+    "expression" : r"\d\s+\-\s+Announce\s+Taxi",
+    "command" : "ATC_MENU_2",
+    "state" : "ON_GROUND"
+  },
+  
+  "ANNOUNCE_TAKEOFF" : {
+    "expression" : r"\d\s+\-\s+Announce\s+Takeoff",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_GROUND"
+  },
+  
+  "CONTACT" : {
+    "expression" : r"\d\s+\-\s+Contact.+?",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+
+  "REQUEST_FLIGHT_FOLOWING" : {
+    "expression" : r"\d\s+\-\s+Request\s+Flight\s+Following",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  "REQUEST_TAXI" : {
+    "expression" : r"Request\s+Taxi",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_GROUND"
+  },
+  "REQUEST_TAKEOFF_CLEARANCE" : {
+    "expression" : r"(\d)\s+\-\s+Request\s+Takeoff\s+Clearance",
+    "command" : "ATC_MENU_1"
+  },
+  "REQUEST_IFR" : {
+    "expression" : r"(\d)\s+\-\s+Request\s+IFR\s+Clearance",
+    "command" : "ATC_MENU_1"
+  },
+
+  "TUNE_FREQUENCY" : {
+    "expression" : r"Tune\s+.+?\s",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+}
 
 class MsfsOcr :
     lang = "en_US"
     text = ''
     value = None
+    event = None
+    state = None
+    key = None
+    message = ''
     limit = 180
     factor = 0.8
 
@@ -42,9 +133,6 @@ class MsfsOcr :
                 for y in range(h):
                     r, g, b = pixels[x, y]
                     pixels[x, y] = self.pixel_rgb(r, g, b)
-
-        #img.save(caminho_saida)
-        #print(f"Imagem processada e salva em: {caminho_saida}")
         return img
 
     def run(self, lang = "en_US") :
@@ -68,72 +156,59 @@ class MsfsOcr :
       entry = self.text.strip()
 
       qnh = re.search(r"Altimeter\s+(\d+)\b", entry, re.IGNORECASE)
-      request_takeoff = re.search(r"(\d)\s+\-\s+Request\s+Takeoff\s+Clearance", entry)
 
       match self.lang :
         case "en_US" :
-          if (('Acknowledge Handoff' in entry)) :
-            return "HANDOFF"
+          """RegEx"""
+          for key, value in OPTIONS.items() :
+            regex = re.search(value["expression"], entry, re.IGNORECASE)
+            if (regex) :
+              self.event = value["command"]
+              self.message = regex.group(0)
+              self.key = key
+              self.state = value["state"]
+              return True
+            
+          """End RegEx"""
           
-          elif (('Contact ' in entry)) :
-            return "CONTACT"
-          
-          elif ('Confirm' in entry) :
+          if ('Confirm' in entry) :
+            self.event = "ATC_MENU_1"
             return "CONFIRM"
           
-          elif ('Request Flight Following' in entry) :
-            return "FLIGHT_FOLLOWING"
-          
-          elif ('Acknowledge Squawk Code' in entry) :
-            return "SQUAWK"
-          
-          elif ('Acknowledge Radar Contact' in entry) :
-            return "ACKNOWLEDGE_CONTACT"
-          
-          elif ('Acknowledge Frequency Change' in entry) :
-            return "ACKNOWLEDGE_FREQUENCY"
-          
           elif ('Acknowledge Assigned Approach' in entry) :
+            self.event = "ATC_MENU_1"
             return "ACKNOWLEDGE_APPROACH"
           
           elif ('Acknowledge Approach Clearance' in entry) :
+            self.event = "ATC_MENU_1"
             return "ACKNOWLEDGE_APPROACH_CLEARANCE"
           
           elif ('Acknowledge Pattern Entry Instructions' in entry) :
+            self.event = "ATC_MENU_1"
             return "ACKNOWLEDGE_PATTERN_ENTRY"
           
           elif ('Acknowledge Takeoff Clearance' in entry) :
+            self.event = "ATC_MENU_1"
             return "ACKNOWLEDGE_TAKEOFF_CLEARANCE"
           
           elif ('Request Taxi' in entry) :
+            self.event = "ATC_MENU_1"
             return "REQUEST_TAXI"
           
           elif ('Acknowledge Taxi Clearance' in entry) :
+            self.event = "ATC_MENU_1"
             return "ACKNOWLEDGE_TAXI"
           
-          elif ('Announce Taxi' in entry) :
-            return "ANNOUNCE_TAXI"
-          
-          elif ('Announce Takeoff' in entry) :
-            return "ANNOUNCE_TAKEOFF"
-          
-          elif ('Acknowledge Indication' in entry) :
-            return "ACKNOWLEDGE_INDICATION"
-          
-          elif (request_takeoff) :
-            self.value = str(request_takeoff.group(1)).strip()
-            return "REQUEST_TAKEOFF_CLEARANCE"
-          
           elif (re.search(r"Tune\s+(.+?)\s+Ground\b", entry, re.IGNORECASE)) :
+            self.event = "ATC_MENU_1"
             return "TUNE_GROUND"
           
           elif (re.search(r"Tune\s+(.+?)\s+Tower\b", entry)) :
+            self.event = "ATC_MENU_1"
             return "TUNE_TOWER"
           
-          elif (('Tune' in entry)) :
-            return "TUNE"
-          
           elif (qnh) :
+            self.event = "ATC_MENU_1"
             self.value = float(str(qnh.group(1))) / 100
             return "ALTIMETER"
           

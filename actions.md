@@ -1,5 +1,5 @@
 # ATC commands
-[ok]  Acknowledge Handoff
+[ok] Acknowledge Handoff
 [ok] [Tune ...]
 [ok] Contact ...
 [OK]  Altimeter
@@ -18,7 +18,9 @@
 [ok] Acknowledge Frequency Change
 [ok] Acknowledge Indication
 [ok] Acknowledge Takeoff Clearance
-[ok]  Announce Taxi
+[ok] Announce Taxi
+[ok] Announce on Final
+[]   QNH setting
 
 # Controls
 []  Speed
