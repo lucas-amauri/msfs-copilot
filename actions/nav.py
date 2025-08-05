@@ -17,16 +17,17 @@ class Nav(BaseConnect) :
   def set_frequency(self, value) : 
     actual = self.get_frequency()
     int_actual = int(actual)
-    print("freq: actual " + str(actual) + " to " + str(value))
 
     value = float(str(value))
     int_value = int(value)
     dec_value = self._get_dec(value)
 
-    print("int " + str(int_value) + " " + str(int_actual))
-
     while (True) :
       actual = self.get_frequency()
+      if (actual == None) :
+        time.sleep(0.5)
+        continue
+
       int_actual = int(actual)
       
       if (int_actual == int_value) :
@@ -41,20 +42,20 @@ class Nav(BaseConnect) :
 
     while (True) :
       actual = self.get_frequency()
+      if (actual == None) :
+        time.sleep(0.5)
+        continue
+
       dec_actual = self._get_dec(actual)
       if (dec_actual == dec_value) :
         break
-
-      print("dec " + str(dec_value) + " " + str(dec_actual))
 
       if (dec_actual > dec_value) :
         self._send("COM_RADIO_FRACT_DEC")
       elif (dec_actual < dec_value) :
         self._send("COM_RADIO_FRACT_INC")
       
-      time.sleep(0.3)
-
-    print("swap" )
+      time.sleep(0.5)
 
     self._send("COM_STBY_RADIO_SWAP")
   

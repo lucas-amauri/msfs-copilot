@@ -14,14 +14,10 @@ class Instruments(BaseConnect) :
     self.altimeter = self.baro()
     value = float(str(value))
 
-    print("altimeter " + str(value))
-
     if (math.isclose(value, self.altimeter)) :
       return
     if (value < 29 or value > 31) :
       return
-    
-    print("[+] Setting altimeter to " + str(value) + " ("+str(self.baro())+")")
   
     while (True) :
       self.altimeter = self.baro()

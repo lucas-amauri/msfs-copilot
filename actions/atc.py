@@ -9,6 +9,11 @@ import time
 class ATC(BaseConnect) :
   state = None
   is_busy = False
+  """
+  Mode = 1 = simulation tuning
+  Mode = 2 = real tune
+  """
+  mode = 2
 
   def __init__(self) :
     super().__init__()
@@ -28,31 +33,37 @@ class ATC(BaseConnect) :
         elif (self.is_on_ground == False and self.ocr.state == "ON_AIR") :
           """In flight"""
           if (self.ocr.key == "CONTACT") :
-            time.sleep(8)
-            self.msg("Acknowledge")
-            self._send("ATC")
-            #self._send("ATC_MENU_OPEN")
-            self._send("ATC_MENU_1")
-            time.sleep(10)
-            
-            self.msg("Tune frequency")
-            self._send("ATC_MENU_1")
-            time.sleep(2)
-            
-            self.msg("Contact new ATC")
-            self._send("ATC_MENU_1")
-            time.sleep(1)
+            if (self.mode == 1) :
+              time.sleep(8)
+              self.msg("Acknowledge")
+              self._send("ATC")
+              self._send("ATC_MENU_1")
+              time.sleep(10)
 
-            '''
-            self.msg("Tune frequency")
-            self.nav.set_frequency(self.ocr.value)
+              self.msg("Tune frequency")
+              self._send("ATC_MENU_1")
+              time.sleep(2)
+              
+              self.msg("Contact new ATC")
+              self._send("ATC_MENU_1")
+              time.sleep(1)
+            elif (self.mode == 2) :
+              """Change frequency"""
+              time.sleep(8)
+              self.msg("Acknowledge")
+              self._send("ATC")
+              self._send("ATC_MENU_1")
 
-            time.sleep(1)
+              time.sleep(5)
 
-            self.msg("Contact new ATC")
-            self._send("ATC_MENU_1")
-            '''
-            
+              self.msg("Tune frequency")
+              self.nav.set_frequency(self.ocr.value)
+
+              time.sleep(1)
+
+              self.msg("Contact new ATC")
+              self._send("ATC_MENU_1")
+              
             #return
           if (self.ocr.key == "ALTIMETER") :
             value = float(str(self.ocr.value)) / 100
