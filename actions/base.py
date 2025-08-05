@@ -11,12 +11,15 @@ class BaseConnect :
   def _send(self, query) :
     event_to_trigger = self.ae.find(query)
     event_to_trigger()
+
+  def _get(self, query) :
+    return self.aq.get(query)
   
   def _print(self, text) :
     print(f"\r[+] " + text, end="")
 
   def check_is_on_ground(self) :
-    result = self.aq.get("SIM_ON_GROUND")
+    result = self._get("SIM_ON_GROUND")
     if (result == None) :
        return True
     
@@ -24,11 +27,4 @@ class BaseConnect :
     test = value == 1.0
     
     self.is_on_ground = test
-
-    '''
-    if (self.is_on_ground) :
-      self._print("On ground")
-    else :
-      self._print("On air")
-    '''
     return self.is_on_ground

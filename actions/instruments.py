@@ -12,6 +12,10 @@ class Instruments(BaseConnect) :
     
   def define_altimeter(self, value) :
     self.altimeter = self.baro()
+    value = float(str(value))
+
+    print("altimeter " + str(value))
+
     if (math.isclose(value, self.altimeter)) :
       return
     if (value < 29 or value > 31) :

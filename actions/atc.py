@@ -2,47 +2,78 @@ from SimConnect import *
 from datetime import datetime
 from actions.base import BaseConnect
 from actions.instruments import Instruments
+from actions.nav import Nav
 from ocr import MsfsOcr
 import time
 
 class ATC(BaseConnect) :
   state = None
+  is_busy = False
 
   def __init__(self) :
     super().__init__()
     self.ocr = MsfsOcr()
     self.instruments = Instruments()
-    self.last_atc = datetime.now()
+    self.nav = Nav()
 
   def check(self) :
-    now = datetime.now()
-    elapsed = now - self.last_atc
-
-    if (elapsed.total_seconds() < 2) :
+    if (self.is_busy) : 
       return
-    self.last_atc = now
-
-    self.ocr.run()
     result = self.ocr.exec()
-    if (result != None) :
+    if (result == True) :
       if (self.ocr.key != None) :
+        self.is_busy = True
         if (self.is_on_ground and self.ocr.state == "ON_GROUND") :
-          """On ground """
+          """On ground"""
         elif (self.is_on_ground == False and self.ocr.state == "ON_AIR") :
           """In flight"""
-          if (result == "ALTIMETER" and self.ocr.value != self.instruments.baro()) :
-              self.msg("Altimeter setting")
-              self.instruments.define_altimeter(self.ocr.value)
+          if (self.ocr.key == "CONTACT") :
+            time.sleep(8)
+            self.msg("Acknowledge")
+            self._send("ATC")
+            #self._send("ATC_MENU_OPEN")
+            self._send("ATC_MENU_1")
+            time.sleep(10)
+            
+            self.msg("Tune frequency")
+            self._send("ATC_MENU_1")
+            time.sleep(2)
+            
+            self.msg("Contact new ATC")
+            self._send("ATC_MENU_1")
+            time.sleep(1)
+
+            '''
+            self.msg("Tune frequency")
+            self.nav.set_frequency(self.ocr.value)
+
+            time.sleep(1)
+
+            self.msg("Contact new ATC")
+            self._send("ATC_MENU_1")
+            '''
+            
+            #return
+          if (self.ocr.key == "ALTIMETER") :
+            value = float(str(self.ocr.value)) / 100
+            if (value != self.instruments.baro()) :
+              self.msg("Altimeter setting " + str(self.ocr.value))
+              self.instruments.define_altimeter(value)
               time.sleep(3)
-              return
+
+            #return
         else :
           return
 
-        self.msg(self.ocr.message)
-        self._send(self.ocr.event)
+        #self.msg(self.ocr.message)
+        #self._send(self.ocr.event)
 
-    time.sleep(2)
+        self.is_busy = False
+
+        time.sleep(1)
 
   def msg(self, msg) :
     now = datetime.now()
     print("[+] " + msg + " ("+str(now)+")")
+
+  
