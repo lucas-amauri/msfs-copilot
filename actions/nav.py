@@ -25,7 +25,7 @@ class Nav(BaseConnect) :
     while (True) :
       actual = self.get_frequency()
       if (actual == None) :
-        time.sleep(0.5)
+        time.sleep(1)
         continue
 
       int_actual = int(actual)
@@ -43,7 +43,7 @@ class Nav(BaseConnect) :
     while (True) :
       actual = self.get_frequency()
       if (actual == None) :
-        time.sleep(0.5)
+        time.sleep(1)
         continue
 
       dec_actual = self._get_dec(actual)
@@ -55,7 +55,7 @@ class Nav(BaseConnect) :
       elif (dec_actual < dec_value) :
         self._send("COM_RADIO_FRACT_INC")
       
-      time.sleep(0.5)
+      time.sleep(0.3)
 
     self._send("COM_STBY_RADIO_SWAP")
   

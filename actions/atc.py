@@ -13,7 +13,7 @@ class ATC(BaseConnect) :
   Mode = 1 = simulation tuning
   Mode = 2 = real tune
   """
-  mode = 2
+  mode = 1
 
   def __init__(self) :
     super().__init__()
@@ -56,10 +56,10 @@ class ATC(BaseConnect) :
 
               time.sleep(5)
 
-              self.msg("Tune frequency")
+              self.msg("Tune frequency " + str(self.ocr.value))
               self.nav.set_frequency(self.ocr.value)
 
-              time.sleep(1)
+              time.sleep(2)
 
               self.msg("Contact new ATC")
               self._send("ATC_MENU_1")
@@ -74,6 +74,7 @@ class ATC(BaseConnect) :
 
             #return
         else :
+          self.is_busy = False
           return
 
         #self.msg(self.ocr.message)

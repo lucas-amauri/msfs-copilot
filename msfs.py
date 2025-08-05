@@ -46,13 +46,10 @@ class CoPilot(BaseConnect) :
         self.atc.is_on_ground = self.is_on_ground
         self.atc.check()
         
-        #time.sleep(0.5)
         time.sleep(1)
       except KeyboardInterrupt:
         print("\n[-] Finalizando monitoramento ATC. Até breve!")
         sys.exit()
-      #except Exception as e:
-      #    print(f"[!] Erro inesperado: {e}")
 
 if __name__ == "__main__":
     responder = CoPilot()
