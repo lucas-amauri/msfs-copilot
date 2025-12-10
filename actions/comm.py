@@ -3,7 +3,11 @@ from actions.base import BaseConnect
 from decimal import Decimal
 import time
 
-class Nav(BaseConnect) :
+"""
+Communications
+* Set radio frequencies
+"""
+class Comm(BaseConnect) :
   def __init__(self) :
     super().__init__()
 

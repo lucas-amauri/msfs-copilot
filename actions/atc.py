@@ -2,10 +2,14 @@ from SimConnect import *
 from datetime import datetime
 from actions.base import BaseConnect
 from actions.instruments import Instruments
-from actions.nav import Nav
+from actions.comm import Comm
 from ocr import MsfsOcr
 import time
 
+"""
+Communications with ATC
+* Handle communications and acting accordingly
+"""
 class ATC(BaseConnect) :
   state = None
   is_busy = False
@@ -19,7 +23,7 @@ class ATC(BaseConnect) :
     super().__init__()
     self.ocr = MsfsOcr()
     self.instruments = Instruments()
-    self.nav = Nav()
+    self.comm = Comm()
     self.ocr.debug = self.debug
 
   def check(self) :
@@ -58,9 +62,9 @@ class ATC(BaseConnect) :
               time.sleep(5)
 
               self.msg("Tune frequency " + str(self.ocr.value))
-              self.nav.set_frequency(self.ocr.value)
+              self.comm.set_frequency(self.ocr.value)
 
-              time.sleep(2)
+              time.sleep(2.5)
 
               self.msg("Contact new ATC")
               self._send("ATC_MENU_1")
