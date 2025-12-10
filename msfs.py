@@ -2,8 +2,7 @@ from SimConnect import *
 from actions.atc import ATC
 from actions.lights import Lights
 from actions.base import BaseConnect
-import time
-import sys
+import time, sys
 
 class CoPilot(BaseConnect) :
   """VRF = 1 | IFR = 2"""
@@ -21,24 +20,15 @@ class CoPilot(BaseConnect) :
     self.lights = Lights()
 
   def run(self) :
+    try :
+      arg1 = sys.argv[1]
+      if (arg1 == "--dev") :
+        print("[!] Dev mode enabled")
+        self.atc.debug = True
+    except IndexError:
+      pass
+    
     print("[+] MSFS CoPilot. Welcome! Enjoy a nice flight")
-    '''
-    print("Choose your Flight mode (1 - VFR, 2 - IFR): ")
-    flight_mode = input()
-    self.flight_mode = int(flight_mode)
-
-    if (self.flight_mode == 1) :
-      print("[+] VFR mode selected")
-      print("Tell what runway destination HDG: ")
-      runway_answer = input()
-
-      self.runway_hdg = int(runway_answer)
-
-      print("[+] Runway destination HDG setted")
-    elif (self.flight_mode == 2) :
-      print("[+] IFR mode selected")
-
-    '''
 
     while (True) :
       try :
@@ -48,7 +38,7 @@ class CoPilot(BaseConnect) :
         
         time.sleep(1)
       except KeyboardInterrupt:
-        print("\n[-] Finalizando monitoramento ATC. Até breve!")
+        print("\n[-] Goodbye!")
         sys.exit()
 
 if __name__ == "__main__":

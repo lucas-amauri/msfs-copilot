@@ -2,6 +2,7 @@ from SimConnect import *
 
 class BaseConnect :
   is_on_ground = None
+  debug = False
 
   def __init__(self) :
     self.sm = SimConnect()

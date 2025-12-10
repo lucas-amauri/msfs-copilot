@@ -20,6 +20,7 @@ class ATC(BaseConnect) :
     self.ocr = MsfsOcr()
     self.instruments = Instruments()
     self.nav = Nav()
+    self.ocr.debug = self.debug
 
   def check(self) :
     if (self.is_busy) : 

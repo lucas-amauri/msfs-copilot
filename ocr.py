@@ -20,6 +20,7 @@ OPTIONS = {
 
 class MsfsOcr :
   text = ''
+  debug = False
   value = None
   event = None
   state = None
@@ -30,13 +31,16 @@ class MsfsOcr :
   factor = 0.6
 
   def exec(self, lang = "en_US") :
-    screenshot = ImageGrab.grab(bbox=(50, 760, 1400, 850))
+    screenshot = ImageGrab.grab(bbox=(50, 700, 1400, 800))
     screenshot = self.dark_image(screenshot)
-    screenshot.save('screenshot.png')
 
     self.text = pytesseract.image_to_string(screenshot)
 
-    #self.log()
+    if (self.debug) :
+      screenshot.save('screenshot.png')
+
+    if (self.debug) :
+      self.log()
 
     match lang :
       case "en_US" :
