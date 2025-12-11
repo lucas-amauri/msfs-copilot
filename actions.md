@@ -1,8 +1,10 @@
 # ATC commands
-[ok] Acknowledge Handoff
-[ok] [Tune ...]
-[ok] Contact ...
-[OK] Altimeter
+## Inflight
+
+[x] Acknowledge Handoff
+[x] [Tune ...]
+[x] Contact ...
+[!] Altimeter
 [] Final approach 
 [] Request flight following
 [] Acknowledge Sqwak Code
@@ -10,7 +12,7 @@
 [] Request Takeoff Clearance
 [] Request IFR Clearance
 [] Read back (Acknowledge) IFR Clearance
-[] Climb and maintaing 13,000 ft
+[] Climb and maintaing ...
 [] Continue VFR to your
 [] Tune ..... Ground
 [] Tune ..... Tower
@@ -21,6 +23,14 @@
 [] Announce Taxi
 [] Announce on Final
 [] QNH setting
+[] Descent and maintain ...
+[] maintain present heading and altitude
+[] Cleared ILS runway ... approach
+[x] Cleared to land runway
+
+## Onground
+[] (On runway approaching for takeoff) Tune Tower and request takeoff
+[] Cleared to takeoff runway ...
+[] Contact ground on ...
 
 # Controls
-[]  Speed

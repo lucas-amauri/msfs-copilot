@@ -24,9 +24,9 @@ class ATC(BaseConnect) :
     self.ocr = MsfsOcr()
     self.instruments = Instruments()
     self.comm = Comm()
-    self.ocr.debug = self.debug
 
   def check(self) :
+    self.ocr.debug = self.debug
     if (self.is_busy) : 
       return
     result = self.ocr.exec()
@@ -39,11 +39,7 @@ class ATC(BaseConnect) :
           """In flight"""
           if (self.ocr.key == "CONTACT") :
             if (self.mode == 1) :
-              time.sleep(8)
-              self.msg("Acknowledge")
-              self._send("ATC")
-              self._send("ATC_MENU_1")
-              time.sleep(10)
+              self.acknowledge()
 
               self.msg("Tune frequency")
               self._send("ATC_MENU_1")
@@ -70,11 +66,14 @@ class ATC(BaseConnect) :
               self._send("ATC_MENU_1")
               
             #return
+          if (self.ocr.key == "ACKNOWLEDGE") :
+            self.acknowledge()
+
           if (self.ocr.key == "ALTIMETER") :
             value = float(str(self.ocr.value)) / 100
             if (value != self.instruments.baro()) :
-              self.msg("Altimeter setting " + str(self.ocr.value))
-              self.instruments.define_altimeter(value)
+              #self.msg("Altimeter setting " + str(self.ocr.value))
+              #self.instruments.define_altimeter(value)
               time.sleep(3)
 
             #return
@@ -88,6 +87,13 @@ class ATC(BaseConnect) :
         self.is_busy = False
 
         time.sleep(1)
+
+  def acknowledge(self) :
+    time.sleep(8)
+    self.msg("Acknowledge")
+    self._send("ATC")
+    self._send("ATC_MENU_1")
+    time.sleep(10)
 
   def msg(self, msg) :
     now = datetime.now()

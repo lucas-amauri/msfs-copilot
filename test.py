@@ -12,9 +12,9 @@ aq = AircraftRequests(sm)
 
 #print("COM STATUS:" + str(aq.get("COM_ACTIVE_FREQUENCY:1")))
 
-#event_to_trigger = ae.find("COM_RADIO_FRACT_INC")
-#event_to_trigger()
+event_to_trigger = ae.find("VIRTUAL_COPILOT_SET")
+event_to_trigger(0)
 
 #sm.send_event(65638, 12345)
-number_dec =  int((Decimal('100.123') % 1) * 1000)
-print( number_dec )
+#number_dec =  int((Decimal('100.123') % 1) * 1000)
+#print( number_dec )

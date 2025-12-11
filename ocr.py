@@ -4,17 +4,43 @@ import pytesseract
 import re
 
 OPTIONS = {
+  # ATC inform new ALTIMETER (no QNH) setting
   "ALTIMETER" : {
     "expression" : r"Altimeter\s+(\d+)",
     "command" : "ALTIMETER",
     "state" : "ON_AIR",
     "index" : 1
   },
+  # ATC request frequency change
   "CONTACT" : {
     "expression" : r"Contact\s+.+?(\d+\.\d+)",
     "command" : "ATC_MENU_1",
     "state" : "ON_AIR",
     "index" : 1
+  },
+  # ATC request new altitude
+  "ACKNOWLEDGE" : {
+    "expression" : r"Descent\sand\smaintain+.+?",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  # ATC clear to approach on airport destination
+  "ACKNOWLEDGE" : {
+    "expression" : r"Maintain\spresent\sheading\sand\altitude+.+?",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  # ATC cleared approaching
+  "ACKNOWLEDGE" : {
+    "expression" : r"Cleared\sILS\srunway+.+?",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
+  },
+  # ATC cleared to landing
+  "ACKNOWLEDGE" : {
+    "expression" : r"Cleared\sto\sland+.+?",
+    "command" : "ATC_MENU_1",
+    "state" : "ON_AIR"
   },
 }
 
@@ -28,7 +54,7 @@ class MsfsOcr :
   matches = None
   message = ''
   limit = 130
-  factor = 0.6
+  factor = 0.7 # 0.6 ON DAY, 0.7 on night
 
   def exec(self, lang = "en_US") :
     screenshot = ImageGrab.grab(bbox=(50, 700, 1400, 800))
@@ -38,8 +64,6 @@ class MsfsOcr :
 
     if (self.debug) :
       screenshot.save('screenshot.png')
-
-    if (self.debug) :
       self.log()
 
     match lang :
